@@ -2,13 +2,14 @@ from selenium import webdriver
 import requests
 import datetime
 import io
+import DB
 import re
 import os
 from pdfminer.converter import TextConverter
 from pdfminer.pdfinterp import PDFPageInterpreter
 from pdfminer.pdfinterp import PDFResourceManager
 from pdfminer.pdfpage import PDFPage
-
+from bs4 import BeautifulSoup
 import json
 from sqlalchemy import desc
 from selenium.webdriver.common.by import By
@@ -229,4 +230,44 @@ def get_inn():
 
     return data
 
-get_director('1655407381')
+
+proxy = {
+    'http': '181.30.28.14:31',
+    'https': '157.245.224.29:31'
+}
+# page=requests.get('https://www.livejournal.com/rsearch?q=%D0%B3%D0%B0%D0%B7%D0%BF%D1%80%D0%BE%D0%BC%D0%BD%D0%B5%D1%84%D1%82%D1%8C&searchArea=post')
+# soup = BeautifulSoup(page.text, 'html.parser')
+# main=soup.find('ul', {'class':'rsearch-result'})
+# main1=main.findAll('li')
+# for m in main1:
+#     url_author=m.find('div',{'class':'rsearch-note__content'})
+#     url_author = url_author.find('a')
+#     title=m.find('a', {'class':'rsearch-note__caption ng-binding'})
+#     title_url=title.attrs['href']
+# print(soup)
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
+driver = webdriver.Firefox()
+driver.get('https://www.livejournal.com/rsearch?q=%D0%B3%D0%B0%D0%B7%D0%BF%D1%80%D0%BE%D0%BC%D0%BD%D0%B5%D1%84%D1%82%D1%8C&searchArea=post')
+ul=driver.find_element_by_class_name('rsearch-result')
+
+for i in range (1,5):
+    li = ul.find_element_by_xpath('//*[@id="js"]/body/div[2]/div[5]/div[1]/div/section/div/div[2]/ul/li[{}]'.format(str(i)))
+    time.sleep(10)
+    author=li.find_element_by_xpath('//*[@id="js"]/body/div[2]/div[5]/div[1]/div/section/div/div[2]/ul/li[{}]/div/div/span[1]/a[2]'
+                                    .format(str(i))).get_attribute('href')
+
+    title=li.find_element_by_xpath('//*[@id="js"]/body/div[2]/div[5]/div[1]/div/section/div/div[2]/ul/li[{}]/div/a'.format(str(i)))
+    titletext=title.text
+    urltitle=title.get_attribute('href')
+    dttm=li.find_element_by_xpath('//*[@id="js"]/body/div[2]/div[5]/div[1]/div/section/div/div[2]/ul/li[{}]/div/div/span[3]'.format(str(i))).text
+    articleurl=requests.get(urltitle)
+    data=BeautifulSoup(articleurl.text, 'html.parser')
+    article=data.find('article').contents[5].text
+
+data=driver.find_element_by_xpath('//*[@id="js"]/body/div[2]/div[5]/div[1]/div/section/div/div[2]/ul/li[3]/div/p/span').text
+driver.get('https://www.reverso.net/text_translation.aspx?lang=RU')
