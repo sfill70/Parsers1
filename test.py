@@ -2,7 +2,7 @@ from selenium import webdriver
 import requests
 import datetime
 import io
-import DB
+from DB import Add, End
 import re
 import os
 from pdfminer.converter import TextConverter
@@ -257,17 +257,29 @@ ul=driver.find_element_by_class_name('rsearch-result')
 
 for i in range (1,5):
     li = ul.find_element_by_xpath('//*[@id="js"]/body/div[2]/div[5]/div[1]/div/section/div/div[2]/ul/li[{}]'.format(str(i)))
-    time.sleep(10)
+    time.sleep(3)
     author=li.find_element_by_xpath('//*[@id="js"]/body/div[2]/div[5]/div[1]/div/section/div/div[2]/ul/li[{}]/div/div/span[1]/a[2]'
                                     .format(str(i))).get_attribute('href')
 
     title=li.find_element_by_xpath('//*[@id="js"]/body/div[2]/div[5]/div[1]/div/section/div/div[2]/ul/li[{}]/div/a'.format(str(i)))
     titletext=title.text
     urltitle=title.get_attribute('href')
-    dttm=li.find_element_by_xpath('//*[@id="js"]/body/div[2]/div[5]/div[1]/div/section/div/div[2]/ul/li[{}]/div/div/span[3]'.format(str(i))).text
+    try:
+        dttm=li.find_element_by_xpath('//*[@id="js"]/body/div[2]/div[5]/div[1]/div/section/div/div[2]/ul/li[{}]/div/div/span[3]'.format(str(i))).text
+    except:
+        dttm = li.find_element_by_xpath(
+            '//*[@id="js"]/body/div[2]/div[5]/div[1]/div/section/div/div[2]/ul/li[{}]/div/div/span[2]'.format(
+                str(i))).text
     articleurl=requests.get(urltitle)
     data=BeautifulSoup(articleurl.text, 'html.parser')
     article=data.find('article').contents[5].text
-
+    dicttemp={
+        'article':article,
+        'title':titletext,
+        'dttm':dttm,
+    'author': author
+    }
+    Add(dicttemp)
+    End()
 data=driver.find_element_by_xpath('//*[@id="js"]/body/div[2]/div[5]/div[1]/div/section/div/div[2]/ul/li[3]/div/p/span').text
 driver.get('https://www.reverso.net/text_translation.aspx?lang=RU')

@@ -26,3 +26,7 @@ session = Session()
 def Add(article):
     journal=LiveJournal(author=article['author'],article=article['article'],
                         dttm=article['dttm'], title=article['title'])
+    session.add(journal)
+
+def End():
+    session.commit()
