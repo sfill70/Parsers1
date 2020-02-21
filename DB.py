@@ -16,7 +16,7 @@ class LiveJournal(Base):
     __tablename__ = 'livejournal'
     id = Column('id', Integer, primary_key=True)
     author = Column(String(400))
-    article = Column(String(1000))
+    article = Column(String(100000))
     title=Column(String(200))
     dttm = Column(DateTime)
 
