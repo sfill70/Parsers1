@@ -5,11 +5,12 @@ import sqlalchemy
 import re
 import os
 import json
+from DB import Bot_History, Add_history, Check
 from sqlalchemy import desc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import parser_nalog as parser
+# import parser_nalog as parser
 import configparser
 
 token = '714164842:AAEtzkdK-6Mf48GZGajbBWSqjCOQjPUM7y4'
@@ -130,11 +131,15 @@ class BotHandler:
         resp = requests.get(self.api_url + method , params )
         result_json = resp.json() [ 'result' ]
         for a in result_json:
-            if (a['message']['text']=='Здравствуйте'):
-                self.send_message(a["message"]['chat']['id'],'Здравствуйте {}'.format(
-                    a["message"]['chat']['first_name']
-                ))
+            if Check(a['update_id'])==0:
+                self.add_in_db(a)
+                if self.check_greeteng(a['message']['text']):
+                    self.send_message(a['message']['chat']['id'],  self.greeting(a['message']['chat']['first_name']))
         return result_json
+
+    @classmethod
+    def check_in_db(cls, update):
+        Check(update)
 
     def send_message(self , chat_id , text):
         params = {'chat_id': chat_id , 'text': text}
@@ -169,6 +174,23 @@ class BotHandler:
         resp = requests.post(self.api_url + method , params )
         return resp
 
+    @staticmethod
+    def greeting( username):
+            return 'Здравствуйте {}. Я бот для предоставления информации о различных фирмах\n' \
+                   'я ищу информации на nalog.ru и в соц сетях.\n' \
+                   'Для начала поиска в соц сетях напишите слово livejournal'.format(username)
+
+    @classmethod
+    def check_greeteng(cls, text):
+        if text in greetings:
+            return True
+
+    @classmethod
+    def add_in_db(cls, message):
+        mes=Bot_History(message=message['message']['text'],
+                        id_chat=message['message']['chat']['id'], offset=message['update_id'],
+                        username=message['message']['chat']['first_name'])
+        Add_history(mes)
     def get_last_update(self):
         get_result = self.get_updates()
 
