@@ -3,7 +3,6 @@ from time import sleep
 import os
 from Parser_organizations.get_driver import GetDriver
 
-
 class KontragentGetUrl(object):
     
     def __init__(self, inn_ogrn):

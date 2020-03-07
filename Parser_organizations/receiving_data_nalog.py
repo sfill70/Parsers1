@@ -4,6 +4,8 @@ import random
 from Parser_organizations.get_driver import GetDriver
 
 
+
+
 class ReceivingDataNalog:
     def __init__(self, inn_ogrn):
         self.data = inn_ogrn

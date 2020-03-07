@@ -2,7 +2,6 @@ import os
 import re
 from Parser_organizations.receiving_data_nalog import ReceivingDataNalog
 
-
 class ParserDataNalog:
 
     def __init__(self, inn, file='res.txt'):

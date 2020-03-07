@@ -3,7 +3,7 @@ import sqlalchemy
 from sqlalchemy import Column, Integer, String, create_engine, MetaData, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql import select
+
 
 # print("Версия SQLAlchemy:", sqlalchemy.__version__)
 # строка подключения к БД через sqlalchemy

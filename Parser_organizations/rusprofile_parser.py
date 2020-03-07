@@ -12,6 +12,7 @@ class RusprofilParser(object):
 
 
 
+
     def parsing(self):
         # driver = self.get_driver()
         driver = GetDriver("https://www.rusprofile.ru/").get_driver()

@@ -27,6 +27,7 @@ class Paser_all(object):
         return map
 
     # Метод для получения всех данных возврвщает словарь
+    # s
     def get_map_all(self):
         map_all = dict()
         try:

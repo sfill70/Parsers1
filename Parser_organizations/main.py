@@ -1,5 +1,4 @@
-import os
-import sys
+
 from Parser_organizations.parser_all import Paser_all
 
 
