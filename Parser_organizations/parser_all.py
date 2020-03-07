@@ -1,10 +1,8 @@
 import os
-
-
-from .kontragent_parser import KontragentParser
-from .parser_data_nalog import ParserDataNalog
-from. rusprofile_parser import RusprofilParser
-from .organizations_base_data import BaseData
+from Parser_organizations.kontragent_parser import KontragentParser
+from Parser_organizations.parser_data_nalog import ParserDataNalog
+from Parser_organizations.rusprofile_parser import RusprofilParser
+from Parser_organizations.organizations_base_data import BaseData
 
 
 
@@ -72,19 +70,19 @@ class Paser_all(object):
         session.commit()
         session.close()
 
-# def main():
-#     # dat = Paser_all('5053004833')
-#     # dat = Paser_all('7707073366')
-#     # dat =Paser_all('7710035963')
-#     # dat = Paser_all('7709259743')
-#     par = Paser_all('7839492885')
-#     dat =par.get_map_all()
-#
-#     par.write_data_map(dat)
-#     Paser_all.send_base_data(dat)
-#     for key in dat:
-#         print(key + " : " + dat[key])
-#
-#
-# if __name__ == '__main__':
-#     main()
+def main():
+    # dat = Paser_all('5053004833')
+    # dat = Paser_all('7707073366')
+    # dat =Paser_all('7710035963')
+    # dat = Paser_all('7709259743')
+    par = Paser_all('7839492885')
+    dat =par.get_map_all()
+
+    par.write_data_map(dat)
+    Paser_all.send_base_data(dat)
+    for key in dat:
+        print(key + " : " + dat[key])
+
+
+if __name__ == '__main__':
+    main()

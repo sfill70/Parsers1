@@ -1,7 +1,7 @@
 import random
 from time import sleep
 import os
-from .get_driver import GetDriver
+from Parser_organizations.get_driver import GetDriver
 
 
 class KontragentGetUrl(object):

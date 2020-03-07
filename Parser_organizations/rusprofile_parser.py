@@ -1,11 +1,8 @@
 
 from time import sleep
 import random
-
-
 import os
-
-from .get_driver import GetDriver
+from Parser_organizations.get_driver import GetDriver
 
 
 class RusprofilParser(object):
@@ -126,7 +123,7 @@ def main():
     # inn = 5031115441
     # inn = 5053000797
     # inn = 5031115441
-    inn = 1106014140
+    inn = 5053000797
     # inn = 7722743350
     a = RusprofilParser(inn, True)
     dik = a.parsing()

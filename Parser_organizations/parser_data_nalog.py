@@ -1,6 +1,6 @@
 import os
 import re
-from .receiving_data_nalog import ReceivingDataNalog
+from Parser_organizations.receiving_data_nalog import ReceivingDataNalog
 
 
 class ParserDataNalog:

@@ -1,6 +1,6 @@
-
-from .parser_all import Paser_all
-
+import os
+import sys
+from Parser_organizations.parser_all import Paser_all
 
 
 def main():
@@ -9,7 +9,8 @@ def main():
 
     # Сздание экземпляра класса
     # parser = Paser_all('7707073366')
-    parser = Paser_all('5031078197')
+    # parser = Paser_all('5031078197')
+    parser = Paser_all('5053000797')
     # Получение словаря со всей всей инфомацией
     data = parser.get_map_all()
     print(data)

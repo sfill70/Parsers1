@@ -1,7 +1,7 @@
 import time
 from time import sleep
 import random
-from .get_driver import GetDriver
+from Parser_organizations.get_driver import GetDriver
 
 
 class ReceivingDataNalog:
