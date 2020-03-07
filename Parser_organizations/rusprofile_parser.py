@@ -118,22 +118,22 @@ class RusprofilParser(object):
         return dict_organization_reliability
 
 
-def main():
-    # inn = 1106014140
-    # inn = 7710035963
-    # inn = 5031115441
-    # inn = 5053000797
-    # inn = 5031115441
-    inn = 5053000797
-    # inn = 7722743350
-    a = RusprofilParser(inn, True)
-    dik = a.parsing()
-
-    file_name = os.path.join(os.getcwd(), str(inn) + '_reliability' + '.txt')
-    for key in dik:
-        with open(file_name, 'a', encoding='utf-8') as ouf:
-            ouf.write(key + " : " + dik[key] + '\n')
-
-
-if __name__ == '__main__':
-    main()
+# def main():
+#     # inn = 1106014140
+#     # inn = 7710035963
+#     # inn = 5031115441
+#     # inn = 5053000797
+#     # inn = 5031115441
+#     inn = 5053000797
+#     # inn = 7722743350
+#     a = RusprofilParser(inn, True)
+#     dik = a.parsing()
+#
+#     file_name = os.path.join(os.getcwd(), str(inn) + '_reliability' + '.txt')
+#     for key in dik:
+#         with open(file_name, 'a', encoding='utf-8') as ouf:
+#             ouf.write(key + " : " + dik[key] + '\n')
+#
+#
+# if __name__ == '__main__':
+#     main()
