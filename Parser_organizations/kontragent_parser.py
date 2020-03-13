@@ -5,6 +5,7 @@ import re
 from time import sleep
 import random
 from Parser_organizations.kontragent_get_url import KontragentGetUrl
+
 headers = {'accept': '*/*',
            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'}
 
@@ -16,6 +17,7 @@ class KontragentParser(object):
         self.url = KontragentGetUrl(inn).get_url()
 
     def parser(self):
+        global soup
         url = self.url
         # url = "https://kontragent.skrin.ru/issuers/URAM"
         session = requests.Session()
@@ -25,120 +27,80 @@ class KontragentParser(object):
             print("ok")
             soup = BeautifulSoup(request.content, 'html.parser')
 
-            tbody = soup.find_all('tbody')
-            print('!!!!', end='Клличество tbody - ')
-            print(len(tbody))
+            clas_div = soup.find_all("div", attrs={'class': 'info_block'})
 
-            td = tbody[len(tbody) - 1].find_all('tr')
-            print(len(td))
-            for tag in td:
-                print()
-            count = 0
-            array_akchioner = []
+            map_fin = dict()
 
-            for tag in td:
-                if not tag.is_empty_element:
-                    at = re.sub(r'\n+', '\n ', str(tag.text).strip()).split('\n')
-                    count = count + 1
-                    array_akchioner.append([re.sub('\\s+', ' ', i) for i in at[0:len(at) + 1] if
-                                            re.sub('\\s+', ' ', i) != ' ' and re.sub('\\s+', ' ', i) != ' - '])
+            def array_to_map(array, map):
+                if len(array) > 1:
+                    line = ""
+                    for i in range(1, len(array)):
+                        line = line + str(2018 + i - len(array) + 1) + " год " + re.sub('\\s+', ' ',
+                                                                                        str(array[i]).strip()) + ", "
 
-            array_founder = []
+                    map[re.sub('\\s+', ' ', str(array[0]).strip())] = line[:-2]
+                return map
 
-            td1 = tbody[len(tbody) - 2].find_all('tr')
-            for tag in td1:
-                tr = tag.find_all('td')
+            def map_fin_filling(tag_fin):
+                array = []
+                tag_tr = tag_fin.find_all("tr")
+                for tr in tag_tr:
+                    # print(tr)
+                    td = tr.find_all("td")
+                    for txt in td:
+                        array.append(txt.text)
+                    array_to_map(array, map_fin)
+                    # print(array)
+                    array = []
 
-                array_tr = []
-                for tg in tr[1:len(tr)]:
-                    at = re.sub('\\s+', ' ', str(tg.text).strip())
-                    array_tr.append(at)
-                if len(array_tr) > 0:
-                    array_founder.append(array_tr)
-                    # print(array_founder)
+            map_akchioner = dict()
 
-            array_finance_1 = []
-            td2 = tbody[0]
-            for tag in td2:
+            def in_map_akchioner(td, map_akchioner):
+                array_akchioner = []
+                key = ""
                 try:
-                    ar = re.sub(r'\\s', ' ', str(tag.text).strip()).split('\n')
-                    array_finance_1.append(ar)
+                    tr = td.find("tr")
+                    key = re.sub('\n\s+|\r\s+', '   ', str(tr.text).strip()).replace("  ", ",")
+                    # print(key)
                 except:
                     pass
-
-            array_finanse_2 = []
-            if len(tbody) > 3:
-                td2 = tbody[1]
-                for tag in td2:
+                td = td.find("tbody")
+                for tag in td:
                     try:
-                        ar = re.sub(r'\\s', ' ', str(tag.text).strip()).split('\n')
-                        array_finanse_2.append(ar)
+                        if not tag.is_empty_element:
+                            at = re.sub(r'\n+', '\n ', str(tag.text).strip()).split('\n')
+                            array_akchioner.append([re.sub('\\s+', ' ', i) for i in at[0:len(at) + 1] if
+                                                    re.sub('\\s+', ' ', i) != ' ' and re.sub('\\s+', ' ', i) != ' - '])
                     except:
                         pass
 
-            for i in array_finanse_2:
-                for j in range(len(i)):
-                    if j > 0:
-                        s = "за " + str(2018 + j - len(i) + 1) + " год - " + re.sub('\\s+', ' ', str(i[j]).strip())
-                        i[j] = s
-                    elif j == 0:
-                        s = i[j].strip().replace('\r', '')
-                        i[j] = s
+                map_akchioner[key] = str(array_akchioner)[1:-1].replace('\'', '')
+                # print(array_akchioner)
+                return map_akchioner
 
-            dic_finanse1 = dict()
-            for i in array_finance_1:
-                key = ''
-                volume = ''
-                for j in range(len(i)):
-                    if j > 0:
-                        s = "за " + str(2018 + j - len(i) + 1) + " год " + re.sub('\\s+', ' ', str(i[j]).strip())
-                        volume = volume + s + ', '
-                    elif j == 0:
-                        s = i[j].strip().replace('\r', '')
-                        key = s
-                dic_finanse1[key] = str(volume[0:-2])
+            for tag in clas_div:
+                if "финансовые показатели" in tag.text.lower():
+                    tag_fin = tag
+                    map_fin_filling(tag_fin)
+                elif "учредителя или участника" in tag.text.strip().lower().replace("  ", " "):
+                    tag_akch = tag
+                    in_map_akchioner(tag_akch, map_akchioner)
             print("Вроде, успешно")
+            map_akchioner.update(map_fin)
+            print(map_akchioner)
 
-            akchioner = dict()
-            print(array_akchioner)
-            akchioner['Акционер,ИНН,Размер доли,Дата внесения'] = str(array_akchioner[::2])[1:-1].replace('\'', '')
-
-            founder = dict()
-            dic_finanse2 = dict()
-
-            if len(array_founder[0]) > 1:
-                founder['Учередитель,ИНН,Размер доли %,Сумма тыс.руб_?'] = str(array_founder)[1:-1].replace('\'', '')
-
-            elif len(array_founder[0]) == 1:
-                array_finanse_2.append('Сумма доходов')
-                for i in array_founder:
-                    array_finanse_2.append(i[0])
-                array_founder = []
-                key = ''
-                volume = ''
-                for j in range(len(array_finanse_2)):
-                    if j > 0:
-                        s = "за " + str(2018 + j - len(array_finanse_2) + 1) + " год - " + re.sub('\\s+', ' ', str(
-                            array_finanse_2[j]).strip())
-                        volume = volume + s + ', '
-                dic_finanse2[array_finanse_2[0]] = str(volume[0:-2])
-
-            akchioner.update(founder)
-            akchioner.update(dic_finanse1)
-            akchioner.update(dic_finanse2)
-
-            return akchioner
+            return map_akchioner
 
 
 # def main():
 #     # KontragentParser('https://kontragent.skrin.ru/issuers/URAM').parser()
 #     # k = KontragentParser("7706043263")
-#     k = KontragentParser("5053000564")
+#     # k = KontragentParser("5053000564")
 #     # k = KontragentParser('5053004833')
 #     # k = KontragentParser('7707073366')
-#     # k = KontragentParser('7706043263')
+#     k = KontragentParser('7706043263')
 #     a = k.parser()
-#     print(a)
+#     # print(a)
 #     for key in a:
 #         print(key + " : " + a[key])
 #
